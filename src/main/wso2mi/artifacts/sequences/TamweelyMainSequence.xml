@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence name="TamweelyMainSequence" onError="TamweelyFaultSequence" trace="disable"
+    xmlns="http://ws.apache.org/ns/synapse">
+
+    <log level="custom">
+        <property name="Sequence" value="TamweelyMainSequence" />
+    </log>
+
+    <property name="externalTxnId" expression="$body/ExternalServiceRequest/GLETxnID"
+        scope="default" type="STRING" />
+        
+    <property name="installmentNumber"
+        expression="$body/ExternalServiceRequest/xparam/InstallmentNumber" scope="default"
+        type="STRING" />
+
+    <property name="clientId" expression="$body/ExternalServiceRequest/xparam/client_id"
+        scope="default" type="STRING" />
+
+
+    <switch
+        source="$body/ExternalServiceRequest/InjectedParams/ExternalServiceRequest/sequence_type">
+
+        <case regex="(?i)^inquiry$">
+
+            <log level="custom">
+                <property name="Operation" value="INQUIRY" />
+            </log>
+
+            <sequence key="TamweelyInquiryRequestSequence" />
+            <sequence key="TamweelyInquiryResponseSequence" />
+
+        </case>
+
+        <case regex="(?i)^payment$">
+
+            <log level="custom">
+                <property name="Operation" value="PAYMENT" />
+            </log>
+
+            <sequence key="TamweelyPaymentRequestSequence" />
+            <sequence key="TamweelyPaymentResponseSequence" />
+
+        </case>
+
+        <case regex="(?i)^checkstatus$">
+
+            <log level="custom">
+                <property name="Operation" value="CHECK_STATUS" />
+            </log>
+
+            <sequence key="TamweelyCheckStatusRequestSequence" />
+            <sequence key="TamweelyCheckStatusResponseSequence" />
+
+        </case>
+
+        <default>
+
+            <log level="custom">
+                <property name="Error" value="Invalid sequence_type" />
+            </log>
+
+            <payloadFactory media-type="xml">
+                <format>
+                    <ExternalServiceResponse xmlns="">
+                        <EXTTxnID>$1</EXTTxnID>
+                        <TransactionTimeStamp>$2</TransactionTimeStamp>
+                        <Status>ESB:INVALID_SEQ</Status>
+                        <Message>Invalid sequence_type: $3</Message>
+                        <xparams />
+                    </ExternalServiceResponse>
+                </format>
+                <args>
+                    <arg evaluator="xml" expression="get-property('externalTxnId')" />
+                    <arg evaluator="xml"
+                        expression="get-property('SYSTEM_DATE', 'yyyy-MM-dd HH:mm:ss.SSS')" />
+                    <arg evaluator="xml"
+                        expression="$body/ExternalServiceRequest/InjectedParams/ExternalServiceRequest/sequence_type" />
+                </args>
+            </payloadFactory>
+
+            <property name="HTTP_SC" scope="axis2" type="STRING" value="400" />
+
+            <property name="messageType" scope="axis2" type="STRING" value="application/xml" />
+
+            <respond />
+
+        </default>
+
+    </switch>
+
+</sequence>

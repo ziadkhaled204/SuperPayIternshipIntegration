@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<api context="/api/tamweely" name="TamweelyAPI" xmlns="http://ws.apache.org/ns/synapse">
+    <resource methods="POST" url-mapping="/">
+        <inSequence>
+            <throttle id="tamweely_throttle">
+                <policy>
+                    <wsp:Policy wsu:id="WSO2MediatorThrottlingPolicy" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
+                        <throttle:MediatorThrottleAssertion xmlns:throttle="http://www.wso2.org/products/wso2commons/throttle">
+                            <throttle:MaximumConcurrentAccess>0</throttle:MaximumConcurrentAccess>
+                            <wsp:Policy>
+                                <throttle:ID throttle:type="IP">other</throttle:ID>
+                                <wsp:Policy>
+                                    <throttle:Control>
+                                        <wsp:Policy>
+                                            <throttle:MaximumCount>50</throttle:MaximumCount>
+                                            <throttle:UnitTime>1000</throttle:UnitTime>
+                                            <throttle:ProhibitTimePeriod>0</throttle:ProhibitTimePeriod>
+                                        </wsp:Policy>
+                                    </throttle:Control>
+                                </wsp:Policy>
+                            </wsp:Policy>
+                        </throttle:MediatorThrottleAssertion>
+                    </wsp:Policy>
+                </policy>
+
+                <onReject>
+                    <payloadFactory media-type="xml">
+                        <format>a
+                            <ExternalServiceResponse xmlns="">
+                                <EXTTxnID>$1</EXTTxnID>
+                                <TransactionTimeStamp>$2</TransactionTimeStamp>
+                                <Status>ESB:RATE_LIMIT_EXCEEDED</Status>
+                                <Message>rate limit exceeded</Message>
+                                <Param1/>
+                                <Param2/>
+                                <Param3/>
+                            </ExternalServiceResponse>
+                        </format>
+                        <args>
+                            <arg evaluator="xml" expression="$body/ExternalServiceRequest/GLETxnID"/>
+                            <arg evaluator="xml" expression="get-property('SYSTEM_DATE', 'yyyy-MM-dd HH:mm:ss.SSS')"/>
+                        </args>
+                    </payloadFactory>
+
+                    <property name="HTTP_SC" scope="axis2" type="STRING" value="429"/>
+                    <property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+                    <respond/>
+                </onReject>
+
+                <onAccept>
+                    <log description="TamweelyRequestLog" level="full"/>
+                    <sequence key="TamweelyMainSequence"/>
+                </onAccept>
+            </throttle>
+        </inSequence>
+
+        <outSequence>
+            <send/>
+        </outSequence>
+
+        <faultSequence>
+            <sequence key="TamweelyFaultSequence"/>
+        </faultSequence>
+    </resource>
+</api>

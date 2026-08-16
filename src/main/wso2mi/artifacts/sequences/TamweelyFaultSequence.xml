@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sequence name="TamweelyFaultSequence" trace="disable" xmlns="http://ws.apache.org/ns/synapse">
+
+    <log level="full" />
+
+    <payloadFactory media-type="xml">
+        <format>
+            <ExternalServiceResponse xmlns="">
+                <EXTTxnID>$1</EXTTxnID>
+                <TransactionTimeStamp>$2</TransactionTimeStamp>
+                <Status>ESB:INTERNAL_ERROR</Status>
+                <Message>Internal server error</Message>
+                <Param1 />
+                <Param2 />
+                <Param3 />
+            </ExternalServiceResponse>
+        </format>
+
+        <args>
+            <arg evaluator="xml" expression="$body/ExternalServiceRequest/GLETxnID" />
+            <arg evaluator="xml" expression="get-property('SYSTEM_DATE', 'yyyy-MM-dd HH:mm:ss.SSS')" />
+        </args>
+    </payloadFactory>
+
+    <property name="HTTP_SC" scope="axis2" type="STRING" value="500" />
+
+    <property name="messageType" scope="axis2" type="STRING" value="application/xml" />
+
+    <respond />
+
+</sequence>
