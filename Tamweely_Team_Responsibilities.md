@@ -1,111 +1,118 @@
-# Tamweely Integration — Project Structure & Flow
+# Tamweely Integration — Project Structure & Work Distribution
 
-## Project Structure & everyone responsbility
+## 1. Project Overview
+
+The project consists of two main applications:
+
+1. **WSO2 Integration Project**
+   - Acts as the integration layer between SuperPay and Tamweely.
+   - Handles APIs, sequences, transformations, endpoints, HMAC signing, routing, and fault handling.
+
+2. **Mock Tamweely Spring Boot Application**
+   - Simulates the Tamweely backend.
+   - Provides the APIs that WSO2 consumes.
+   - Returns different responses and scenarios to allow complete integration testing.
+   - Does NOT represent the real Tamweely backend; it only mocks the APIs required by this integration.
+
+---
+
+# 2. Overall Architecture
+
+```text
+                    SuperPay
+                       │
+                       │ XML Request
+                       ▼
+              ┌───────────────────┐
+              │       WSO2        │
+              │ Micro Integrator   │
+              │                   │
+              │ Integration APIs  │
+              │ Sequences         │
+              │ Endpoints         │
+              │ Transformations   │
+              │ HMAC              │
+              │ Fault Handling    │
+              └─────────┬─────────┘
+                        │
+                        │ HTTP / JSON
+                        ▼
+              ┌───────────────────┐
+              │  Mock Tamweely    │
+              │   Spring Boot     │
+              │                   │
+              │ Inquiry API       │
+              │ Payment API       │
+              │ Check Status API  │
+              │                   │
+              │ Dynamic Scenarios │
+              └───────────────────┘
+
+```
+
+# 3. Repo & Project Structure
+
 
 ```text
 TamweelyIntegration/
 │
-├── api/
-│   ├── TamweelyAPI.xml                  ← P1
-│   └── MockTamweelyAPI.xml                         ← P5
-│
-├── endpoints/
-│   ├── TamweelyInquiryEndpoint.xml                 ← P2
-│   ├── TamweelyPaymentEndpoint.xml                 ← P3
-│   └── TamweelyCheckStatusEndpoint.xml             ← P4
-│
-├── sequences/
+├── wso2/
 │   │
-│   ├── integration/
-│   │   │
-│   │   ├── TamweelyMainSequence.xml                ← P1
-│   │   │
-│   │   ├── TamweelyInquiryRequestSequence.xml      ← P2
-│   │   ├── TamweelyInquiryResponseSequence.xml     ← P2
-│   │   │
-│   │   ├── TamweelyPaymentRequestSequence.xml      ← P3
-│   │   ├── TamweelyPaymentResponseSequence.xml     ← P3
-│   │   │
-│   │   ├── TamweelyCheckStatusRequestSequence.xml  ← P4
-│   │   └── TamweelyCheckStatusResponseSequence.xml ← P4
+│   ├── api/
+│   │   └── TamweelyAPI.xml                         ← P1
 │   │
-│   └── mock/
-│       │
-│       ├── MockTamweelyInquirySequence.xml         ← P5
-│       │
-│       ├── MockTamweelyPaymentSequence.xml         ← P6
-│       │
-│       └── MockTamweelyCheckStatusSequence.xml     ← P6
+│   ├── endpoints/
+│   │   ├── TamweelyInquiryEndpoint.xml              ← P2
+│   │   ├── TamweelyPaymentEndpoint.xml              ← P3
+│   │   └── TamweelyCheckStatusEndpoint.xml         ← P4
+│   │
+│   ├── sequences/
+│   │   │
+│   │   ├── integration/
+│   │   │   │
+│   │   │   ├── TamweelyMainSequence.xml            ← P1
+│   │   │   │
+│   │   │   ├── TamweelyInquiryRequestSequence.xml  ← P2
+│   │   │   ├── TamweelyInquiryResponseSequence.xml ← P2
+│   │   │   │
+│   │   │   ├── TamweelyPaymentRequestSequence.xml  ← P3
+│   │   │   ├── TamweelyPaymentResponseSequence.xml ← P3
+│   │   │   │
+│   │   │   ├── TamweelyCheckStatusRequestSequence.xml  ← P4
+│   │   │   └── TamweelyCheckStatusResponseSequence.xml ← P4
+│   │   │
+│   │   └── fault/
+│   │       └── TamweelyFaultSequence.xml            ← P1
+│   │
+│   └── README.md
 │
-└── fault/
-    └── TamweelyFaultSequence.xml                   ← P1
+│
+└── mock-tamweely/
+    │
+    ├── pom.xml
+    │
+    └── src/
+        └── main/
+            │
+            ├── java/com/superpay/tamweely/
+            │   │
+            │   ├── MockTamweelyApplication.java    ← P5
+            │   │
+            │   ├── controller/
+            │   │   └── TamweelyMockController.java ← P5
+            │   │
+            │   ├── service/
+            │   │   └── TamweelyMockService.java    ← P5
+            │   │
+            │   ├── model/
+            │   │   ├── Bill.java                   ← P5
+            │   │   └── Transaction.java            ← P5
+            │   │
+            │   └── data/
+            │       └── MockDataStore.java           ← P5
+            │
+            └── resources/
+                └── application.properties           ← P5
+
+
 ```
-
-
-## integration flow
-
-```text
-SuperPay
-   │
-   │ XML Request
-   ▼
-TamweelyIntegrationAPI                         P1
-   │
-   ▼
-TamweelyMainSequence                          P1
-   │
-   ▼
-Operation Request Sequence                    P2/P3/P4
-   │
-   │ XML → JSON
-   │ HMAC Signature
-   ▼
-Operation Endpoint                            P2/P3/P4
-   │
-   │ HTTP POST / JSON
-   ▼
-Tamweely
-   │
-   │ JSON Response
-   ▼
-Operation Response Sequence                   P2/P3/P4
-   │
-   │ JSON → XML
-   ▼
-TamweelyMainSequence
-   │
-   ▼
-SuperPay
-```
-## mock flow
-
-TamweelyIntegration
-        │
-        │ HTTP Request
-        ▼
-MockTamweelyAPI                              P5
-        │
-        ├──────────────────┐
-        │                  │
-        ▼                  ▼
- Inquiry Mock          Payment Mock
- Sequence               Sequence
-   P5                       P6
-        │                  │
-        └────────┬─────────┘
-                 │
-
-
-
-## important note for mocking 
-
-you have two options for dynamic scenarios
-
-
-option A: send scenario as query param (mock/tamweely/inquiry?scenario=success)
-and then you can get it with (get-property('query.param.scenario'))
-
-option B: create cases with specific IDs like 
-
-(999999999999 --> sucess, 1000000000000 --> found, 18888888888888 --> fail)
-
