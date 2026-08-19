@@ -1,0 +1,265 @@
+{
+  "info": {
+    "_postman_id": "0f8f1ff0-8b6e-4a2a-9f1f-4c5d0e2a7b3c",
+    "name": "Mock Server",
+    "description": "Collection for the dynamic mock server. Register mocks at runtime, manage them, then call them.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Register mocks",
+      "item": [
+        {
+          "name": "Register GET /api/users mock",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Echoes back the registered mock', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.path).to.eql('/api/users');",
+                  "  pm.expect(body.method).to.eql('GET');",
+                  "  pm.expect(body.id).to.be.a('string');",
+                  "});",
+                  "pm.collectionVariables.set('usersMockId', pm.response.json().id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"method\": \"GET\",\n  \"path\": \"/api/users\",\n  \"status\": 200,\n  \"response\": {\n    \"users\": [\n      { \"id\": 1, \"name\": \"Ahmed\" },\n      { \"id\": 2, \"name\": \"Sara\" }\n    ]\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/mock/register",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "mock", "register" ]
+            }
+          }
+        },
+        {
+          "name": "Register POST /api/items mock (201)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Echoes back the registered mock', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.method).to.eql('POST');",
+                  "  pm.expect(body.path).to.eql('/api/items');",
+                  "  pm.expect(body.status).to.eql(201);",
+                  "});",
+                  "pm.collectionVariables.set('itemsMockId', pm.response.json().id);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"method\": \"POST\",\n  \"path\": \"/api/items\",\n  \"status\": 201,\n  \"response\": {\n    \"message\": \"item created\",\n    \"id\": 42\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/mock/register",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "mock", "register" ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Manage mocks",
+      "item": [
+        {
+          "name": "List all mocks",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Returns an array of mocks', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(Array.isArray(body)).to.eql(true);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": { "mode": "raw", "raw": "" },
+            "url": {
+              "raw": "{{baseUrl}}/mock/list",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "mock", "list" ]
+            }
+          }
+        },
+        {
+          "name": "Update mock by id (GET /api/users -> 201)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Mock updated', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.status).to.eql(201);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"method\": \"GET\",\n  \"path\": \"/api/users\",\n  \"status\": 201,\n  \"response\": {\n    \"users\": [\n      { \"id\": 9, \"name\": \"Mona\" }\n    ]\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/mock/{{usersMockId}}",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "mock", "{{usersMockId}}" ]
+            }
+          }
+        },
+        {
+          "name": "Delete mock by id (POST /api/items)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 204', () => pm.response.to.have.status(204));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": { "mode": "raw", "raw": "" },
+            "url": {
+              "raw": "{{baseUrl}}/mock/{{itemsMockId}}",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "mock", "{{itemsMockId}}" ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Call registered mocks",
+      "item": [
+        {
+          "name": "Call GET /api/users",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201 (after update)', () => pm.response.to.have.status(201));",
+                  "pm.test('Returns registered users', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.users[0].name).to.eql('Mona');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": { "mode": "raw", "raw": "" },
+            "url": {
+              "raw": "{{baseUrl}}/api/users",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "api", "users" ]
+            }
+          }
+        },
+        {
+          "name": "Call POST /api/items",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Returns registered message', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.message).to.eql('item created');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"new item\"\n}" },
+            "url": {
+              "raw": "{{baseUrl}}/api/items",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "api", "items" ]
+            }
+          }
+        },
+        {
+          "name": "Call GET /api/unknown (expect 404)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 404', () => pm.response.to.have.status(404));"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": { "mode": "raw", "raw": "" },
+            "url": {
+              "raw": "{{baseUrl}}/api/unknown",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "api", "unknown" ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080", "type": "string" }
+  ]
+}
