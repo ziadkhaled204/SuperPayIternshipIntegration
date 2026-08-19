@@ -1,4 +1,48 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<request>
-    <message>Sample request</message>
-</request>
+<sequence xmlns="http://ws.apache.org/ns/synapse" name="TamweelyCheckStatusRequestSequence" onError="TamweelyFaultSequence" trace="disable">
+<log level="custom">
+<property name="sequence" value="TamweelyCheckStatusRequestSequence"/>
+</log>
+<property expression="$body/ExternalServiceRequest/InjectedParams/ExternalServiceRequest/biller" name="sender_name" scope="default" type="STRING"/>
+<property expression="$body/ExternalServiceRequest/InjectedParams/IDNO" name="idno" scope="default" type="STRING"/>
+<filter source="boolean(get-property('idno'))" regex="false">
+<then>
+<property expression="$body/ExternalServiceRequest/xparam/SubscriberId" name="idno" scope="default" type="STRING"/>
+</then>
+</filter>
+<property expression="$body/ExternalServiceRequest/InjectedParams/Num_Funding" name="num_funding" scope="default" type="STRING"/>
+<filter source="boolean(get-property('num_funding'))" regex="false">
+<then>
+<property expression="$body/ExternalServiceRequest/xparam/GovernorateCode" name="num_funding" scope="default" type="STRING"/>
+</then>
+</filter>
+<property expression="$body/ExternalServiceRequest/InjectedParams/RequestId" name="request_id" scope="default" type="STRING"/>
+<filter source="boolean(get-property('request_id'))" regex="false">
+<then>
+<property expression="$body/ExternalServiceRequest/GLETxnID" name="request_id" scope="default" type="STRING"/>
+</then>
+</filter>
+<property expression="$body/ExternalServiceRequest/InjectedParams/RequestDate" name="request_date" scope="default" type="STRING"/>
+<property expression="$body/ExternalServiceRequest/InjectedParams/Signature" name="signature" scope="default" type="STRING"/>
+<filter source="boolean(get-property('signature'))" regex="false">
+<then>
+<property expression="$body/ExternalServiceRequest/InjectedParams/p_biller_service_id" name="signature" scope="default" type="STRING"/>
+</then>
+</filter>
+<log level="full"/>
+<payloadFactory media-type="json">
+<format> { "SenderName": "$1", "Msg": "CheckStatus", "IDNO": "$2", "Num_Funding": "$3", "RequestId": "$4", "RequestDate": "$5", "Signature": "$6" } </format>
+<args>
+<arg evaluator="xml" expression="$ctx:sender_name"/>
+<arg evaluator="xml" expression="$ctx:idno"/>
+<arg evaluator="xml" expression="$ctx:num_funding"/>
+<arg evaluator="xml" expression="$ctx:request_id"/>
+<arg evaluator="xml" expression="$ctx:request_date"/>
+<arg evaluator="xml" expression="$ctx:signature"/>
+</args>
+</payloadFactory>
+<property name="Content-Type" scope="transport" type="STRING" value="application/json"/>
+<log level="full"/>
+<call>
+<endpoint key="TamweelyCheckStatusAPI"/>
+</call>
+</sequence>

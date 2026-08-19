@@ -1,0 +1,222 @@
+{
+  "info": {
+    "name": "Tamweely WSO2 MI Integration API",
+    "_postman_id": "4a6b2c11-9d2f-4a3e-9b4f-2b8d3e1a7c44",
+    "description": "Collection to test the integration through the WSO2 Micro Integrator (TamweelyAPI). Requests send the SuperPay XML envelope to http://localhost:8290/api/tamweely; the MI routes to the mock-tamweely backend (localhost:8080) and returns an ExternalServiceResponse XML.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "miUrl",
+      "value": "http://localhost:8290"
+    },
+    {
+      "key": "apiContext",
+      "value": "/api/tamweely"
+    }
+  ],
+  "item": [
+    {
+      "name": "Inquiry (via MI)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP status is 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('returns ExternalServiceResponse with SVC:0 status', function () {",
+              "  pm.expect(pm.response.text()).to.include('ExternalServiceResponse');",
+              "  pm.expect(pm.response.text()).to.include('<Status>SVC:0</Status>');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "text/xml"
+          },
+          {
+            "key": "Accept",
+            "value": "application/xml"
+          }
+        ],
+        "url": {
+          "raw": "{{miUrl}}{{apiContext}}",
+          "host": [
+            "{{miUrl}}"
+          ],
+          "path": [
+            "api",
+            "tamweely"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "<ExternalServiceRequest>\n    <GLETxnID>txn-inquiry-0001</GLETxnID>\n    <DestinationAccountValue>0</DestinationAccountValue>\n    <InjectedParams>\n        <RequestDate>2021-03-04T12:30:11</RequestDate>\n        <ExternalServiceRequest>\n            <biller>SuperPay</biller>\n            <sequence_type>inquiry</sequence_type>\n        </ExternalServiceRequest>\n        <IDNO>30002316458974</IDNO>\n        <Num_Funding>1</Num_Funding>\n        <RequestId>118ce782-ae37-7755-5297-bel3568462bc</RequestId>\n        <Signature>GhuMkkJoopyZofJQtMku3+uIfelJefMGhuMkkJoopyZofJQtMku3+uIfelJefM==</Signature>\n    </InjectedParams>\n</ExternalServiceRequest>",
+          "options": {
+            "raw": {
+              "language": "xml"
+            }
+          }
+        },
+        "description": "Inquiry - get customer data by national ID, routed through the WSO2 MI (sequence_type=inquiry)."
+      }
+    },
+    {
+      "name": "Payment (via MI)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP status is 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('returns ExternalServiceResponse with SVC:0 status', function () {",
+              "  pm.expect(pm.response.text()).to.include('ExternalServiceResponse');",
+              "  pm.expect(pm.response.text()).to.include('<Status>SVC:0</Status>');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "text/xml"
+          },
+          {
+            "key": "Accept",
+            "value": "application/xml"
+          }
+        ],
+        "url": {
+          "raw": "{{miUrl}}{{apiContext}}",
+          "host": [
+            "{{miUrl}}"
+          ],
+          "path": [
+            "api",
+            "tamweely"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "<ExternalServiceRequest>\n    <GLETxnID>txn-payment-0002</GLETxnID>\n    <DestinationAccountValue>1000</DestinationAccountValue>\n    <InjectedParams>\n        <RequestDate>2021-03-04T12:30:11</RequestDate>\n        <ExternalServiceRequest>\n            <biller>SuperPay</biller>\n            <sequence_type>payment</sequence_type>\n        </ExternalServiceRequest>\n        <IDNO>30002316458974</IDNO>\n        <Num_Funding>1</Num_Funding>\n        <RequestId>118ce782-ae37-7755-5297-bel3568462bc</RequestId>\n        <Signature>GhuMkkJoopyZofJQtMku3+uIfelJefMGhuMkkJoopyZofJQtMku3+uIfelJefM==</Signature>\n        <Amount>1000</Amount>\n    </InjectedParams>\n</ExternalServiceRequest>",
+          "options": {
+            "raw": {
+              "language": "xml"
+            }
+          }
+        },
+        "description": "Payment - apply a premium amount (sequence_type=payment). Run after Inquiry to see updated balances."
+      }
+    },
+    {
+      "name": "CheckStatus (via MI)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP status is 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('returns ExternalServiceResponse', function () {",
+              "  pm.expect(pm.response.text()).to.include('ExternalServiceResponse');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "text/xml"
+          },
+          {
+            "key": "Accept",
+            "value": "application/xml"
+          }
+        ],
+        "url": {
+          "raw": "{{miUrl}}{{apiContext}}",
+          "host": [
+            "{{miUrl}}"
+          ],
+          "path": [
+            "api",
+            "tamweely"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "<ExternalServiceRequest>\n    <GLETxnID>txn-check-0003</GLETxnID>\n    <DestinationAccountValue>0</DestinationAccountValue>\n    <InjectedParams>\n        <RequestDate>2021-03-04T12:30:11</RequestDate>\n        <ExternalServiceRequest>\n            <biller>SuperPay</biller>\n            <sequence_type>checkstatus</sequence_type>\n        </ExternalServiceRequest>\n        <IDNO>30002316458974</IDNO>\n        <Num_Funding>1</Num_Funding>\n        <RequestId>118ce782-ae37-7755-5297-bel3568462bc</RequestId>\n        <Signature>GhuMkkJoopyZofJQtMku3+uIfelJefMGhuMkkJoopyZofJQtMku3+uIfelJefM==</Signature>\n    </InjectedParams>\n</ExternalServiceRequest>",
+          "options": {
+            "raw": {
+              "language": "xml"
+            }
+          }
+        },
+        "description": "CheckStatus - run after Payment to see the updated balance (sequence_type=checkstatus)."
+      }
+    },
+    {
+      "name": "CheckStatus Fully Paid (via MI)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP status is 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('returns ExternalServiceResponse', function () {",
+              "  pm.expect(pm.response.text()).to.include('ExternalServiceResponse');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "text/xml"
+          },
+          {
+            "key": "Accept",
+            "value": "application/xml"
+          }
+        ],
+        "url": {
+          "raw": "{{miUrl}}{{apiContext}}",
+          "host": [
+            "{{miUrl}}"
+          ],
+          "path": [
+            "api",
+            "tamweely"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "<ExternalServiceRequest>\n    <GLETxnID>txn-check-0004</GLETxnID>\n    <DestinationAccountValue>0</DestinationAccountValue>\n    <InjectedParams>\n        <RequestDate>2021-03-04T12:30:11</RequestDate>\n        <ExternalServiceRequest>\n            <biller>SuperPay</biller>\n            <sequence_type>checkstatus</sequence_type>\n        </ExternalServiceRequest>\n        <IDNO>50009876543210</IDNO>\n        <Num_Funding>1</Num_Funding>\n        <RequestId>118ce782-ae37-7755-5297-bel3568462bc</RequestId>\n        <Signature>GhuMkkJoopyZofJQtMku3+uIfelJefMGhuMkkJoopyZofJQtMku3+uIfelJefM==</Signature>\n    </InjectedParams>\n</ExternalServiceRequest>",
+          "options": {
+            "raw": {
+              "language": "xml"
+            }
+          }
+        },
+        "description": "CheckStatus of a fully paid client (seeded IDNO 50009876543210)."
+      }
+    }
+  ]
+}

@@ -1,4 +1,11 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<request>
-    <message>Sample request</message>
-</request>
+<endpoint xmlns="http://ws.apache.org/ns/synapse" name="TamweelyCheckStatusAPI">
+    <http method="post" uri-template="http://localhost:8080/api/SuperPay/SuperPayController/CheckStatus">
+        <suspendOnFailure>
+            <initialDuration>-1</initialDuration>
+            <progressionFactor>1.0</progressionFactor>
+        </suspendOnFailure>
+        <markForSuspension>
+            <retriesBeforeSuspension>0</retriesBeforeSuspension>
+        </markForSuspension>
+    </http>
+</endpoint>

@@ -1,4 +1,127 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<request>
-    <message>Sample request</message>
-</request>
+<sequence xmlns="http://ws.apache.org/ns/synapse" name="TamweelyInquiryResponseSequence" onError="TamweelyFaultSequence" trace="disable">
+<log level="custom">
+<property name="sequence" value="TamweelyInquiryResponseSequence"/>
+</log>
+<log level="custom">
+<property expression="json-eval($)" name="Tamweely Inquiry API Response"/>
+</log>
+<switch xmlns:ns="http://org.apache.synapse/xsd" source="json-eval($.status.code)">
+<case regex="200">
+<property expression="json-eval($.status.message)" name="message" scope="default" type="STRING"/>
+<property expression="json-eval($.CLIENTNAME)" name="CLIENTNAME" scope="default" type="STRING"/>
+<property expression="json-eval($.NATIONALID)" name="NATIONALID" scope="default" type="STRING"/>
+<property expression="json-eval($.DUEDATE)" name="DUEDATE" scope="default" type="STRING"/>
+<property expression="json-eval($.NEXTMONTHLYDUEDATE)" name="NEXTMONTHLYDUEDATE" scope="default" type="STRING"/>
+<property expression="json-eval($.CUSTOMERDUEAMOUNT)" name="CUSTOMERDUEAMOUNT" scope="default" type="STRING"/>
+<property expression="json-eval($.TOTALOUTSTANDING)" name="TOTALOUTSTANDING" scope="default" type="STRING"/>
+<property expression="json-eval($.PAIDAMOUNT)" name="PAIDAMOUNT" scope="default" type="STRING"/>
+<property expression="json-eval($.NUMBEROFREMAININGINSTALLMENTS)" name="NUMBEROFREMAININGINSTALLMENTS" scope="default" type="STRING"/>
+<property expression="json-eval($.NEXTMONTHLYDUEINSTALLMENT)" name="NEXTMONTHLYDUEINSTALLMENT" scope="default" type="STRING"/>
+<property expression="json-eval($.PRIMIUMNO)" name="PRIMIUMNO" scope="default" type="STRING"/>
+<property expression="json-eval($.PENALITIES)" name="PENALITIES" scope="default" type="STRING"/>
+<property expression="get-property('SYSTEM_DATE', 'yyyy-MM-dd HH:mm:ss.SSS')" name="date" scope="default" type="STRING"/>
+<payloadFactory media-type="xml">
+<format>
+<ExternalServiceResponse xmlns="">
+<EXTTxnID>$1</EXTTxnID>
+<TransactionTimeStamp>$2</TransactionTimeStamp>
+<Status>SVC:0</Status>
+<Message>$3</Message>
+<xparams>
+<param>
+<key>CLIENTNAME</key>
+<value>$4</value>
+</param>
+<param>
+<key>NATIONALID</key>
+<value>$5</value>
+</param>
+<param>
+<key>DUEDATE</key>
+<value>$6</value>
+</param>
+<param>
+<key>NEXTMONTHLYDUEDATE</key>
+<value>$7</value>
+</param>
+<param>
+<key>CUSTOMERDUEAMOUNT</key>
+<value>$8</value>
+</param>
+<param>
+<key>TOTALOUTSTANDING</key>
+<value>$9</value>
+</param>
+<param>
+<key>PAIDAMOUNT</key>
+<value>$10</value>
+</param>
+<param>
+<key>NUMBEROFREMAININGINSTALLMENTS</key>
+<value>$11</value>
+</param>
+<param>
+<key>NEXTMONTHLYDUEINSTALLMENT</key>
+<value>$12</value>
+</param>
+<param>
+<key>PRIMIUMNO</key>
+<value>$13</value>
+</param>
+<param>
+<key>PENALITIES</key>
+<value>$14</value>
+</param>
+</xparams>
+</ExternalServiceResponse>
+</format>
+<args>
+<arg evaluator="xml" expression="$ctx:externalTxnId"/>
+<arg evaluator="xml" expression="$ctx:date"/>
+<arg evaluator="xml" expression="$ctx:message"/>
+<arg evaluator="xml" expression="$ctx:CLIENTNAME"/>
+<arg evaluator="xml" expression="$ctx:NATIONALID"/>
+<arg evaluator="xml" expression="$ctx:DUEDATE"/>
+<arg evaluator="xml" expression="$ctx:NEXTMONTHLYDUEDATE"/>
+<arg evaluator="xml" expression="$ctx:CUSTOMERDUEAMOUNT"/>
+<arg evaluator="xml" expression="$ctx:TOTALOUTSTANDING"/>
+<arg evaluator="xml" expression="$ctx:PAIDAMOUNT"/>
+<arg evaluator="xml" expression="$ctx:NUMBEROFREMAININGINSTALLMENTS"/>
+<arg evaluator="xml" expression="$ctx:NEXTMONTHLYDUEINSTALLMENT"/>
+<arg evaluator="xml" expression="$ctx:PRIMIUMNO"/>
+<arg evaluator="xml" expression="$ctx:PENALITIES"/>
+</args>
+</payloadFactory>
+<property action="remove" name="HTTP_SC" scope="axis2"/>
+<property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+<property name="HTTP_SC" scope="axis2" type="STRING" value="200"/>
+<respond/>
+</case>
+<default>
+<property expression="json-eval($.status.code)" name="status" scope="default" type="STRING"/>
+<property expression="json-eval($.status.message)" name="message" scope="default" type="STRING"/>
+<property expression="get-property('SYSTEM_DATE', 'yyyy-MM-dd HH:mm:ss.SSS')" name="date" scope="default" type="STRING"/>
+<payloadFactory media-type="xml">
+<format>
+<ExternalServiceResponse xmlns="">
+<EXTTxnID>$1</EXTTxnID>
+<TransactionTimeStamp>$2</TransactionTimeStamp>
+<Status>SVC:$3</Status>
+<Message>$4</Message>
+<xparams/>
+</ExternalServiceResponse>
+</format>
+<args>
+<arg evaluator="xml" expression="$ctx:externalTxnId"/>
+<arg evaluator="xml" expression="$ctx:date"/>
+<arg evaluator="xml" expression="$ctx:status"/>
+<arg evaluator="xml" expression="$ctx:message"/>
+</args>
+</payloadFactory>
+<property action="remove" name="HTTP_SC" scope="axis2"/>
+<property name="messageType" scope="axis2" type="STRING" value="application/xml"/>
+<property name="HTTP_SC" scope="axis2" type="STRING" value="200"/>
+<respond/>
+</default>
+</switch>
+</sequence>

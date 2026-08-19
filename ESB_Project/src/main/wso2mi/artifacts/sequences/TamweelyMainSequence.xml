@@ -6,19 +6,11 @@
         <property name="Sequence" value="TamweelyMainSequence" />
     </log>
 
-    <property name="externalTxnId" expression="$body/ExternalServiceRequest/GLETxnID"
-        scope="default" type="STRING" />
-        
-    <property name="installmentNumber"
-        expression="$body/ExternalServiceRequest/xparam/InstallmentNumber" scope="default"
-        type="STRING" />
+    <property name="externalTxnId" expression="$body/ExternalServiceRequest/GLETxnID" scope="default" type="STRING" />
 
-    <property name="clientId" expression="$body/ExternalServiceRequest/xparam/client_id"
-        scope="default" type="STRING" />
+    <property name="amount" expression="$body/ExternalServiceRequest/DestinationAccountValue" scope="default" type="STRING" />
 
-
-    <switch
-        source="$body/ExternalServiceRequest/InjectedParams/ExternalServiceRequest/sequence_type">
+    <switch source="$body/ExternalServiceRequest/InjectedParams/ExternalServiceRequest/sequence_type">
 
         <case regex="(?i)^inquiry$">
 
@@ -71,10 +63,8 @@
                 </format>
                 <args>
                     <arg evaluator="xml" expression="get-property('externalTxnId')" />
-                    <arg evaluator="xml"
-                        expression="get-property('SYSTEM_DATE', 'yyyy-MM-dd HH:mm:ss.SSS')" />
-                    <arg evaluator="xml"
-                        expression="$body/ExternalServiceRequest/InjectedParams/ExternalServiceRequest/sequence_type" />
+                    <arg evaluator="xml" expression="get-property('SYSTEM_DATE', 'yyyy-MM-dd HH:mm:ss.SSS')" />
+                    <arg evaluator="xml" expression="$body/ExternalServiceRequest/InjectedParams/ExternalServiceRequest/sequence_type" />
                 </args>
             </payloadFactory>
 
