@@ -212,3 +212,16 @@ Returns a `Bill` (bill fields + `status.code` / `status.message`):
 - Standard Spring Boot Maven app. Entry point: `MockTamweelyApplication`.
 
 ---
+
+## 6. Testing with Postman
+
+Ready-to-use collections are included in the repo — import them into Postman and run the requests.
+
+| Collection | Targets | What it covers |
+|---|---|---|
+| `TamweelyMI.postman_collection.json` | ESB at `localhost:8290` | Send `ExternalServiceRequest` XMLs through the MI API (`inquiry` / `payment` / `checkstatus` + error cases) |
+| `TamweelyMockAPI.postman_collection.json` | Mock at `localhost:8080` | Call the mock endpoints directly to verify scenarios (success / invalid / not found) |
+
+To test the full end-to-end flow: start the mock (8080) → start the MI (8290) → run the `TamweelyMI` collection.
+
+---
