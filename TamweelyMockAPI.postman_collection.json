@@ -1,0 +1,357 @@
+{
+  "info": {
+    "name": "Tamweely Mock API",
+    "_postman_id": "3f2c8a76-4b1e-4d5f-9a3b-1e7c2d0f8a55",
+    "description": "Collection to test the Tamweely mock backend (com.superpay.tamweely). Requests use the exact request bodies from the integration API document and expect the documented responses.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    }
+  ],
+  "item": [
+    {
+      "name": "Inquiry (GetSuperPayDataByIDNO)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP status is 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('status.code is 200 successful', function () {",
+              "  var json = pm.response.json();",
+              "  pm.expect(json.status.code).to.eql(200);",
+              "  pm.expect(json.status.message).to.eql('successful');",
+              "});",
+              "pm.test('returns the client data', function () {",
+              "  var json = pm.response.json();",
+              "  pm.expect(json.CLIENTNAME).to.eql('نادر احمد محمد احمد');",
+              "  pm.expect(json.NATIONALID).to.eql('30002316458974');",
+              "  pm.expect(json.TOTALOUTSTANDING).to.eql(2960);",
+              "  pm.expect(json.PAIDAMOUNT).to.eql(0);",
+              "  pm.expect(json.NUMBEROFREMAININGINSTALLMENTS).to.eql(3);",
+              "  pm.expect(json.NEXTMONTHLYDUEINSTALLMENT).to.eql(555);",
+              "  pm.expect(json.PRIMIUMNO).to.eql(2);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/SuperPay/SuperPayController/GetSuperPayDataByIDNO",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "SuperPay",
+            "SuperPayController",
+            "GetSuperPayDataByIDNO"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"SenderName\": \"SuperPay\",\n  \"Msg\": \"Inquiry\",\n  \"IDNO\": \"30002316458974\",\n  \"RequestId\": \"118ce782-ae37-7755-5297-bel3568462bc\",\n  \"Num_Funding\": 1,\n  \"RequestDate\": \"2021-03-04T12:30:11\",\n  \"Signature\": \"GhuMkkJoopyZofJQtMku3+uIfelJefMGhuMkkJoopyZofJQtMku3+uIfelJefM==\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "description": "Inquiry - get customer data by national ID. Body matches the API document sample."
+      },
+      "response": [
+        {
+          "name": "Inquiry successful",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/SuperPay/SuperPayController/GetSuperPayDataByIDNO"
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "body": "{\n  \"status\": {\n    \"code\": 200,\n    \"message\": \"successful\"\n  },\n  \"CLIENTNAME\": \"نادر احمد محمد احمد\",\n  \"NATIONALID\": \"30002316458974\",\n  \"DUEDATE\": null,\n  \"NEXTMONTHLYDUEDATE\": \"2020-06-25T00:00:00\",\n  \"CUSTOMERDUEAMOUNT\": 0,\n  \"TOTALOUTSTANDING\": 2960,\n  \"PAIDAMOUNT\": 0,\n  \"NUMBEROFREMAININGINSTALLMENTS\": 3,\n  \"NEXTMONTHLYDUEINSTALLMENT\": 555,\n  \"PRIMIUMNO\": 2,\n  \"PENALITIES\": 0\n}"
+        }
+      ]
+    },
+    {
+      "name": "Payment (SetAmount)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP status is 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('status.code is 200 successful', function () {",
+              "  var json = pm.response.json();",
+              "  pm.expect(json.status.code).to.eql(200);",
+              "  pm.expect(json.status.message).to.eql('successful');",
+              "});",
+              "pm.test('payment is applied', function () {",
+              "  var json = pm.response.json();",
+              "  pm.expect(json.PAIDAMOUNT).to.eql(1000);",
+              "  pm.expect(json.TOTALOUTSTANDING).to.eql(1960);",
+              "  pm.expect(json.NUMBEROFREMAININGINSTALLMENTS).to.eql(2);",
+              "  pm.expect(json.DUEDATE).to.eql('2020-06-25T00:00:00');",
+              "  pm.expect(json.NEXTMONTHLYDUEDATE).to.eql('2020-07-25T00:00:00');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/SuperPay/SuperPayController/SetAmount",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "SuperPay",
+            "SuperPayController",
+            "SetAmount"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"SenderName\": \"SuperPay\",\n  \"Msg\": \"Payment\",\n  \"IDNO\": \"30002316458974\",\n  \"RequestId\": \"118ce782-ae37-7755-5297-bel3568462bc\",\n  \"Num_Funding\": 1,\n  \"RequestDate\": \"2021-03-04T12:30:11\",\n  \"Signature\": \"GhuMkkJoopyZofJQtMku3+uIfelJefMGhuMkkJoopyZofJQtMku3+uIfelJefM==\",\n  \"Amount\": 1000\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "description": "Payment - apply a premium amount. Body matches the API document sample."
+      },
+      "response": [
+        {
+          "name": "Payment successful",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/SuperPay/SuperPayController/SetAmount"
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "body": "{\n  \"status\": {\n    \"code\": 200,\n    \"message\": \"successful\"\n  },\n  \"CLIENTNAME\": \"نادر احمد محمد احمد\",\n  \"NATIONALID\": \"30002316458974\",\n  \"DUEDATE\": \"2020-06-25T00:00:00\",\n  \"NEXTMONTHLYDUEDATE\": \"2020-07-25T00:00:00\",\n  \"CUSTOMERDUEAMOUNT\": 0,\n  \"TOTALOUTSTANDING\": 1960,\n  \"PAIDAMOUNT\": 1000,\n  \"NUMBEROFREMAININGINSTALLMENTS\": 2,\n  \"NEXTMONTHLYDUEINSTALLMENT\": 555,\n  \"PRIMIUMNO\": 3,\n  \"PENALITIES\": 0\n}"
+        }
+      ]
+    },
+    {
+      "name": "CheckStatus",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP status is 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('status.code is 201 Not Paid when debt remains', function () {",
+              "  var json = pm.response.json();",
+              "  pm.expect(json.status.code).to.eql(201);",
+              "  pm.expect(json.status.message).to.eql('Not Paid');",
+              "});",
+              "pm.test('returns remaining balance', function () {",
+              "  var json = pm.response.json();",
+              "  pm.expect(json.TOTALOUTSTANDING).to.eql(1960);",
+              "  pm.expect(json.PAIDAMOUNT).to.eql(1000);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/SuperPay/SuperPayController/CheckStatus",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "SuperPay",
+            "SuperPayController",
+            "CheckStatus"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"SenderName\": \"SuperPay\",\n  \"Msg\": \"CheckStatus\",\n  \"IDNO\": \"30002316458974\",\n  \"RequestId\": \"118ce782-ae37-7755-5297-bel3568462bc\",\n  \"Num_Funding\": 1,\n  \"RequestDate\": \"2021-03-04T12:30:11\",\n  \"Signature\": \"GhuMkkJoopyZofJQtMku3+uIfelJefMGhuMkkJoopyZofJQtMku3+uIfelJefM==\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "description": "Check status - run this after the Payment request to see the updated values (status 201 Not Paid)."
+      },
+      "response": [
+        {
+          "name": "CheckStatus Not Paid",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/SuperPay/SuperPayController/CheckStatus"
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "body": "{\n  \"status\": {\n    \"code\": 201,\n    \"message\": \"Not Paid\"\n  },\n  \"CLIENTNAME\": \"نادر احمد محمد احمد\",\n  \"NATIONALID\": \"30002316458974\",\n  \"DUEDATE\": \"2020-06-25T00:00:00\",\n  \"NEXTMONTHLYDUEDATE\": \"2020-07-25T00:00:00\",\n  \"CUSTOMERDUEAMOUNT\": 0,\n  \"TOTALOUTSTANDING\": 1960,\n  \"PAIDAMOUNT\": 1000,\n  \"NUMBEROFREMAININGINSTALLMENTS\": 2,\n  \"NEXTMONTHLYDUEINSTALLMENT\": 555,\n  \"PRIMIUMNO\": 3,\n  \"PENALITIES\": 0\n}"
+        }
+      ]
+    },
+    {
+      "name": "CheckStatus (Fully Paid)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP status is 200', function () { pm.response.to.have.status(200); });",
+              "pm.test('status.code is 200 successful when fully paid', function () {",
+              "  var json = pm.response.json();",
+              "  pm.expect(json.status.code).to.eql(200);",
+              "  pm.expect(json.status.message).to.eql('successful');",
+              "  pm.expect(json.TOTALOUTSTANDING).to.eql(0);",
+              "  pm.expect(json.PAIDAMOUNT).to.eql(2000);",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/api/SuperPay/SuperPayController/CheckStatus",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "api",
+            "SuperPay",
+            "SuperPayController",
+            "CheckStatus"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"SenderName\": \"SuperPay\",\n  \"Msg\": \"CheckStatus\",\n  \"IDNO\": \"50009876543210\",\n  \"RequestId\": \"118ce782-ae37-7755-5297-bel3568462bc\",\n  \"Num_Funding\": 1,\n  \"RequestDate\": \"2021-03-04T12:30:11\",\n  \"Signature\": \"GhuMkkJoopyZofJQtMku3+uIfelJefMGhuMkkJoopyZofJQtMku3+uIfelJefM==\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "description": "Check status of a fully paid client (seeded IDNO 50009876543210) - expects status 200 successful."
+      },
+      "response": [
+        {
+          "name": "CheckStatus successful",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/SuperPay/SuperPayController/CheckStatus"
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "body": "{\n  \"status\": {\n    \"code\": 200,\n    \"message\": \"successful\"\n  },\n  \"CLIENTNAME\": \"محمد علي السيد\",\n  \"NATIONALID\": \"50009876543210\",\n  \"DUEDATE\": \"2020-04-10T00:00:00\",\n  \"NEXTMONTHLYDUEDATE\": \"2020-05-10T00:00:00\",\n  \"CUSTOMERDUEAMOUNT\": 0,\n  \"TOTALOUTSTANDING\": 0,\n  \"PAIDAMOUNT\": 2000,\n  \"NUMBEROFREMAININGINSTALLMENTS\": 0,\n  \"NEXTMONTHLYDUEINSTALLMENT\": 0,\n  \"PRIMIUMNO\": 4,\n  \"PENALITIES\": 0\n}"
+        }
+      ]
+    }
+  ]
+}
