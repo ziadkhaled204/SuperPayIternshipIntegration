@@ -1,0 +1,180 @@
+{
+  "info": {
+    "_postman_id": "0f8f1ff0-8b6e-4a2a-9f1f-4c5d0e2a7b3c",
+    "name": "Tamweely SuperPay Mock Server",
+    "description": "Mock server for the Tamweely-SuperPay integration. Register SuperPay mocks (Inquiry, Payment, CheckStatus) at runtime, manage them, then call them.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Register mocks",
+      "item": [
+        {
+          "name": "Register POST SuperPay Inquiry mock (GetSuperPayDataByIDNO)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"method\": \"POST\",\n  \"path\": \"/api/SuperPay/SuperPayController/GetSuperPayDataByIDNO\",\n  \"status\": 200,\n  \"response\": {\n    \"status\": { \"code\": 200, \"message\": \"successful\" },\n    \"CLIENTNAME\": \"نادر احمد محمد احمد\",\n    \"NATIONALID\": \"29009252700311\",\n    \"DUEDATE\": null,\n    \"NEXTMONTHLYDUEDATE\": \"2020-06-25 00:00:00\",\n    \"CUSTOMERDUEAMOUNT\": 0,\n    \"TOTALOUTSTANDING\": 2960,\n    \"PAIDAMOUNT\": 0,\n    \"NUMBEROFREMAININGINSTALLMENTS\": 3,\n    \"NEXTMONTHLYDUEINSTALLMENT\": 555.0,\n    \"PRIMIUMNO\": 2,\n    \"PENALITIES\": 0.0\n  }\n}",
+              "options": {
+                "raw": { "language": "json" }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/mock/register",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "mock", "register" ]
+            }
+          }
+        },
+        {
+          "name": "Register POST SuperPay Payment mock (SetAmount)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"method\": \"POST\",\n  \"path\": \"/api/SuperPay/SuperPayController/SetAmount\",\n  \"status\": 200,\n  \"response\": {\n    \"status\": { \"code\": 200, \"message\": \"successful\" },\n    \"CLIENTNAME\": \"نادر احمد محمد احمد\",\n    \"NATIONALID\": \"29009252700311\",\n    \"DUEDATE\": \"2020-06-25 00:00:00\",\n    \"NEXTMONTHLYDUEDATE\": \"2020-07-25 00:00:00\",\n    \"CUSTOMERDUEAMOUNT\": 0,\n    \"TOTALOUTSTANDING\": 1960,\n    \"PAIDAMOUNT\": 1000,\n    \"NUMBEROFREMAININGINSTALLMENTS\": 2,\n    \"NEXTMONTHLYDUEINSTALLMENT\": 1960,\n    \"PRIMIUMNO\": 2,\n    \"PENALITIES\": 0.0\n  }\n}",
+              "options": {
+                "raw": { "language": "json" }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/mock/register",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "mock", "register" ]
+            }
+          }
+        },
+        {
+          "name": "Register POST SuperPay CheckStatus mock (CheckStatus)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"method\": \"POST\",\n  \"path\": \"/api/SuperPay/SuperPayController/CheckStatus\",\n  \"status\": 200,\n  \"response\": {\n    \"status\": { \"code\": 202, \"message\": \"successful\" },\n    \"CLIENTNAME\": \"نادر احمد محمد احمد\",\n    \"NATIONALID\": \"29009252700311\",\n    \"DUEDATE\": \"2020-06-25 00:00:00\",\n    \"NEXTMONTHLYDUEDATE\": \"2020-07-25 00:00:00\",\n    \"CUSTOMERDUEAMOUNT\": 0,\n    \"TOTALOUTSTANDING\": 1960,\n    \"PAIDAMOUNT\": 1000,\n    \"NUMBEROFREMAININGINSTALLMENTS\": 2,\n    \"NEXTMONTHLYDUEINSTALLMENT\": 1960,\n    \"PRIMIUMNO\": 2,\n    \"PENALITIES\": 0.0\n  }\n}",
+              "options": {
+                "raw": { "language": "json" }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/mock/register",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "mock", "register" ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Manage mocks",
+      "item": [
+        {
+          "name": "List all mocks",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": { "mode": "raw", "raw": "" },
+            "url": {
+              "raw": "{{baseUrl}}/mock/list",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "mock", "list" ]
+            }
+          }
+        },
+        {
+          "name": "Delete SuperPay CheckStatus mock",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": { "mode": "raw", "raw": "" },
+            "url": {
+              "raw": "{{baseUrl}}/mock/{{superpayCheckId}}",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "mock", "{{superpayCheckId}}" ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Call registered mocks",
+      "item": [
+        {
+          "name": "Call POST SuperPay Inquiry (GetSuperPayDataByIDNO)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"SenderName\": \"SuperPay\",\n  \"Msg\": \"Inquiry\",\n  \"IDNO\": \"30002316458974\",\n  \"RequestId\": \"118ce782-ae37-7755-5297-bel3568462bc\",\n  \"Num_Funding\": 1,\n  \"RequestDate\": \"2021-03-04T12:30:11\",\n  \"Signature\": \"GhuMkkJoopyZofJQtMku3+uIfelJefMGhuMkkJoopyZofJQtMku3+uIfelJefM==\"\n}",
+              "options": {
+                "raw": { "language": "json" }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/SuperPay/SuperPayController/GetSuperPayDataByIDNO",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "api", "SuperPay", "SuperPayController", "GetSuperPayDataByIDNO" ]
+            }
+          }
+        },
+        {
+          "name": "Call POST SuperPay Payment (SetAmount)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"SenderName\": \"SuperPay\",\n  \"Msg\": \"Payment\",\n  \"IDNO\": \"30002316458974\",\n  \"RequestId\": \"118ce782-ae37-7755-5297-bel3568462bc\",\n  \"Num_Funding\": 1,\n  \"RequestDate\": \"2021-03-04T12:30:11\",\n  \"Signature\": \"GhuMkkJoopyZofJQtMku3+uIfelJefMGhuMkkJoopyZofJQtMku3+uIfelJefM==\",\n  \"Amount\": 1000\n}",
+              "options": {
+                "raw": { "language": "json" }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/SuperPay/SuperPayController/SetAmount",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "api", "SuperPay", "SuperPayController", "SetAmount" ]
+            }
+          }
+        },
+        {
+          "name": "Call POST SuperPay CheckStatus (CheckStatus)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"SenderName\": \"SuperPay\",\n  \"Msg\": \"CheckStatus\",\n  \"IDNO\": \"30002316458974\",\n  \"RequestId\": \"118ce782-ae37-7755-5297-bel3568462bc\",\n  \"Num_Funding\": 1,\n  \"RequestDate\": \"2021-03-04T12:30:11\",\n  \"Signature\": \"GhuMkkJoopyZofJQtMku3+uIfelJefMGhuMkkJoopyZofJQtMku3+uIfelJefM==\"\n}",
+              "options": {
+                "raw": { "language": "json" }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/SuperPay/SuperPayController/CheckStatus",
+              "host": [ "{{baseUrl}}" ],
+              "path": [ "api", "SuperPay", "SuperPayController", "CheckStatus" ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080", "type": "string" }
+  ]
+}
